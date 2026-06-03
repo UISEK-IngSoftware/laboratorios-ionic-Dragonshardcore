@@ -1,5 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonCardTitle, IonCardHeader, IonCardContent } from '@ionic/react';
 import './Tab3.css';
 
 const Tab3: React.FC = () => {
@@ -7,7 +6,7 @@ const Tab3: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Tab 3</IonTitle>
+          <IonTitle>Desarrollador</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -16,7 +15,26 @@ const Tab3: React.FC = () => {
             <IonTitle size="large">Tab 3</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer name="Tab 3 page" />
+        <div className="card-container">
+          <IonCard className="card">
+            <img
+              src="https://avatars.githubusercontent.com/u/48026030?v=4"
+              alt="Avatar"
+            />
+
+            <IonCardHeader>
+              <IonCardTitle>
+                Carlos Xavier Campos Godoy
+              </IonCardTitle>
+            </IonCardHeader>
+
+            <IonCardContent>
+              Estudiante de Ingeniería en Informática.
+              Desarrollo de aplicaciones web y móviles con Ionic React.
+            </IonCardContent>
+          </IonCard>
+        </div>
+
       </IonContent>
     </IonPage>
   );
