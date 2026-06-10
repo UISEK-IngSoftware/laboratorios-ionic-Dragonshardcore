@@ -1,21 +1,21 @@
 import React from 'react';
 import { pencil, trash } from 'ionicons/icons';
 import { IonItem,IonThumbnail,IonItemSliding,IonItemOptions,IonItemOption,IonLabel,IonIcon } from '@ionic/react';
+import { Repository} from '../interfaces/Repository';
 
-interface RepoProps {
-  name: string;
-  avatarUrl: string;
-}
-
-const RepoItem: React.FC<RepoProps> = ({ name, avatarUrl }) => {
+const RepoItem: React.FC<Repository> = ( repo ) => {
   return (
     <IonItemSliding>
       <IonItem>
         <IonThumbnail slot="start">
-          <img src={avatarUrl} alt={name} />
+          <img src={repo.owner.avatar_url} alt={repo.name} />
         </IonThumbnail>
 
-        <IonLabel>{name}</IonLabel>
+        <IonLabel>
+          <h3>{repo.name}</h3>
+          {repo.description && <p>{repo.description}</p>}
+          {repo.language && (<p><strong>Language:</strong> {repo.language} </p>)}
+          </IonLabel>
       </IonItem>
 
       <IonItemOptions>
