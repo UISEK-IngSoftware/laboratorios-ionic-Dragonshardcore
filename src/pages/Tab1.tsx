@@ -1,29 +1,43 @@
 import React from 'react';
-import { IonContent, IonHeader, IonList, IonPage, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react';
+import { IonContent, IonButton,   IonButtons, IonHeader, IonList, IonPage, IonTitle, IonToolbar, useIonViewWillEnter, IonIcon } from '@ionic/react';
 import RepoItem from '../components/RepoItem';
 import './Tab1.css';
 import { fetchRepositories } from '../services/GithubServces';
 import { Repository } from '../interfaces/Repository';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { logoGithub, refresh } from 'ionicons/icons';
 
 const Tab1: React.FC = () => {
   const [repos,setRepos] = React.useState<Repository[]>([]);
   const [loading,setLoading] = React.useState<boolean>(false);
-  const loadRepos = async() => {
+
+  const loadRepos = async() => { 
+
     setLoading(true);
     const reposData = await fetchRepositories();
     setRepos(reposData);
     setLoading(false);
+
   }
     useIonViewWillEnter(() =>{
       loadRepos();
+
     });
     
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Repositorios</IonTitle>
+       <IonHeader>
+        <IonToolbar color="primary">
+          <IonTitle>
+            <IonIcon icon={logoGithub} />
+            {' '}Repositorios GitHub
+          </IonTitle>
+
+          <IonButtons slot="end">
+            <IonButton onClick={loadRepos}>
+              <IonIcon icon={refresh} />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>

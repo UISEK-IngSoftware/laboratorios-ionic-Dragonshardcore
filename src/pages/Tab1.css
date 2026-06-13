@@ -1,0 +1,21 @@
+.welcome-banner {
+    text-align: center;
+    padding: 20px;
+}
+
+.welcome-banner h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.welcome-banner p {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.empty-state {
+    text-align: center;
+    margin-top: 40px;
+    color: #6b7280;
+}
