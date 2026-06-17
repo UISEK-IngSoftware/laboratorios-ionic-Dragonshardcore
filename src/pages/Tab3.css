@@ -38,3 +38,11 @@
     object-fit: cover;
     border: 3px solid #3880ff;
 }
+
+.save-button {
+    margin-top: 10px;
+    --background: #28a745;
+    --background-hover: #218838;
+    --background-activated: #1e7e34;
+    --border-radius: 8px;
+}
