@@ -1,4 +1,4 @@
-import { IonButton, IonIcon, useIonViewWillEnter, IonContent, IonHeader, IonInput, IonPage, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonIcon, useIonViewWillEnter, IonContent, IonHeader, IonInput, IonPage, IonTextarea, IonTitle, IonToolbar, IonText} from '@ionic/react';
 import './Tab2.css';
 import React from 'react';
 import { RepositoryPayload } from '../interfaces/payload';
@@ -10,46 +10,23 @@ import { Repository } from '../interfaces/Repository';
 import { logoGithub, refresh } from 'ionicons/icons';
 
 const Tab2: React.FC = () => {
-  const history = useHistory();
-
   const [loading, setLoading] = React.useState<boolean>(false);
+  const history = useHistory();
   const [repos,setRepos] = React.useState<Repository[]>([]);
-  
+  const [errorMsg, setErrorMsg] = React.useState<string>("");
 
   const repoFormData: RepositoryPayload = {
     name: '',
-    description: '',
+    description: ''
   };
 
-  const setRepoName = (value: string) => {
+  const setRepoFormData = (value: string) => {
     repoFormData.name = value;
-  };
-
+  }
   const setRepoDescription = (value: string) => {
     repoFormData.description = value;
-  };
-
-  const saveRepository = () => {
-    if (repoFormData.name.trim() === '') {
-      alert('Este campo es obligatorio');
-      return;
-    };
-
-    setLoading(true);
-
-    createRepository(repoFormData)
-      .then(() => {
-        history.push('/tab1');
-      })
-      .catch(() => {
-        alert('Error al crear repositorio');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    };
-
-      const loadRepos = async() => { 
+  }
+   const loadRepos = async() => { 
   
       setLoading(true);
       const reposData = await fetchRepositories();
@@ -57,10 +34,33 @@ const Tab2: React.FC = () => {
       setLoading(false);
   
     }
-      useIonViewWillEnter(() =>{
-        loadRepos();
+
+  const saveRepository = async () => {
+  if (repoFormData.name.trim() === '') {
+    setErrorMsg('Debes llenar el campo nombre del repositorio.');
+    return;
+  }
+
+  if (repoFormData.description.trim() === '') {
+    setErrorMsg('Debes llenar el campo descripción del repositorio.');
+    return;
+  }
+
+  setErrorMsg('');
+  setLoading(true);
+
+  try {
+    await createRepository(repoFormData);
+    history.push('/tab1');
+  } catch (error: any) {
+    setErrorMsg('Error al crear el repositorio: ' + (error?.message || error));
+  } finally {
+    setLoading(false);
+  }
+};
+
+  useIonViewWillEnter(() => setErrorMsg(""))
   
-      });
   return (
     <IonPage>
       <IonHeader>
@@ -93,7 +93,7 @@ const Tab2: React.FC = () => {
             fill="outline"
             placeholder="nombre-repositorio"
             value={repoFormData.name}
-            onIonChange={(e) => setRepoName(e.detail.value!)}
+            onIonChange={(e) => setRepoFormData(e.detail.value!)}
           />
 
           <IonTextarea
@@ -107,18 +107,20 @@ const Tab2: React.FC = () => {
             onIonChange={(e) => setRepoDescription(e.detail.value!)}
             autoGrow
           />
-
+            {errorMsg !== "" && (
+              <IonText color="danger">
+                {errorMsg}
+              </IonText>
+            )}
           <IonButton
-            className="form-field save-button"
+            className='form-field'
             expand="block"
-            fill="solid"
+            fill='solid'
             onClick={saveRepository}
           >
-            Crear repositorio
+            Crear Repositorio
           </IonButton>
-
         </div>
-
         {loading && <LoadingSpinner isOpen={loading} />}
       </IonContent>
     </IonPage>
