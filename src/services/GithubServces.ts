@@ -53,3 +53,31 @@ export const getUserInf = async (): Promise<GithubUser | null> => {
     throw new Error((error as Error).message);
   }
 };
+
+export const updateRepository = async (
+  owner: string,
+  repoName: string,
+  repository: RepositoryPayload
+): Promise<Repository> => {
+  try {
+    const response = await githubApiClient.patch(
+      `/repos/${owner}/${repoName}`,
+      repository
+    );
+
+    return response.data as Repository;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+};
+
+export const deleteRepository = async (
+  owner: string,
+  repoName: string
+): Promise<void> => {
+  try {
+    await githubApiClient.delete(`/repos/${owner}/${repoName}`);
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+};
