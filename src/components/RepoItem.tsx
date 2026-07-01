@@ -17,16 +17,20 @@ import { useHistory } from 'react-router-dom';
 
 
 
-interface RepoItemProps extends Repository {
-  onEdit?: (repo: Repository) => void;
+interface RepoItemProps {
+  repo: Repository;
+  onDelete?: () => void;
 }
-
-const RepoItem: React.FC<RepoItemProps> = (repo) => {
+const RepoItem: React.FC<RepoItemProps> = ({
+  repo,
+  onDelete,
+}) => {
   const [showAlert, setShowAlert] = useState(false);
 
   const handleDelete = async () => {
     try {
       await deleteRepository(repo.owner.login, repo.name);
+      await onDelete?.();
 
       console.log("Repositorio eliminado correctamente.");
 

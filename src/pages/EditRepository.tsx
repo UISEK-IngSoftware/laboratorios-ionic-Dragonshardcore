@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   IonPage,
   IonHeader,
@@ -10,9 +10,9 @@ import {
   IonInput,
   IonButton
 } from '@ionic/react';
-
 import { useHistory, useLocation } from 'react-router-dom';
 import { updateRepository } from '../services/GithubServces';
+
 
 const EditRepository: React.FC = () => {
 
@@ -23,6 +23,13 @@ const repo = location.state?.repository;
 
 const [name, setName] = useState(repo?.name ?? '');
 const [description, setDescription] = useState(repo?.description ?? '');
+
+useEffect(() => {
+  if (repo) {
+    setName(repo.name);
+    setDescription(repo.description ?? '');
+  }
+}, [repo]);
 
   const handleUpdate = async () => {
       if (!repo) {
@@ -41,6 +48,7 @@ const [description, setDescription] = useState(repo?.description ?? '');
         }
       );
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
 
       history.push('/tab1');
 
