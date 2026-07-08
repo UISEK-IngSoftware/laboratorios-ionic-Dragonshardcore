@@ -29,7 +29,7 @@ const Tab2: React.FC = () => {
 
   const history = useHistory();
   const location = useLocation<any>();
-  const repo = location.state?.repository;
+  const repo: Repository | undefined = location.state?.repository;
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -44,6 +44,11 @@ const Tab2: React.FC = () => {
       setRepoFormData({
         name: repo.name,
         description: repo.description || ""
+      });
+    } else {
+      setRepoFormData({
+        name: "",
+        description: ""
       });
     }
   }, [repo]);
