@@ -8,7 +8,8 @@ import {
   IonTextarea,
   IonTitle,
   IonToolbar,
-  IonText
+  IonText,
+  useIonViewWillEnter
 } from '@ionic/react';
 
 import './Tab2.css';
@@ -39,7 +40,7 @@ const Tab2: React.FC = () => {
     description: ""
   });
 
-  useEffect(() => {
+  useIonViewWillEnter(() => {
     if (repo) {
       setRepoFormData({
         name: repo.name,
