@@ -32,19 +32,37 @@ const Tab3: React.FC = () => {
 
   const loadUserInfo = async () => {
     setLoading(true);
-    getUserInf().then((user) => setUserInfo(user))
-      .catch((error) => setError("Error al cargar la información del usuario: " + error))
-      .finally(() => setLoading(false))
-  }
+
+    getUserInf()
+      .then((user) => setUserInfo(user))
+      .catch((error) => {
+        setUserInfo(null);
+        setError("Error al cargar la información del usuario: " + error);
+      })
+      .finally(() => setLoading(false));
+  };
 
   const handleLogout = () => {
     AuthService.logout();
     history.replace('/login');
-  }
+  };
 
   useIonViewWillEnter(() => {
     loadUserInfo();
   });
+
+  
+  const logoutButton = (
+    <IonButton
+      expand="block"
+      color="danger"
+      className="logout-button"
+      onClick={handleLogout}
+    >
+      <IonIcon slot="start" icon={logOutOutline} />
+      Cerrar sesión
+    </IonButton>
+  );
 
   return (
     <IonPage>
@@ -62,7 +80,8 @@ const Tab3: React.FC = () => {
         </IonHeader>
 
         <div className="card-container">
-          {userInfo && (
+
+          {userInfo ? (
             <IonCard className="card">
               <img
                 src={userInfo.avatar_url}
@@ -82,6 +101,7 @@ const Tab3: React.FC = () => {
               <IonCardContent>
                 {userInfo.bio}
               </IonCardContent>
+
               <div className="pets-section">
                 <h2>Mis Mascotas</h2>
 
@@ -99,30 +119,28 @@ const Tab3: React.FC = () => {
                   />
                 </div>
               </div>
-              <IonButton
-            expand="block"
-            color="danger"
-            className="logout-button"
-            onClick={handleLogout}
-          >
-            <IonIcon slot="start" icon={logOutOutline} />
-            Cerrar sesión
-          </IonButton>
+
+              
+              {logoutButton}
+
             </IonCard>
+          ) : (
+            <>
+              {errorMsg !== "" && (
+                <IonText color="danger">
+                  {errorMsg}
+                </IonText>
+              )}
+
+              
+              {logoutButton}
+            </>
           )}
 
-          {errorMsg !== "" && (
-            <IonText color="danger">
-              {errorMsg}
-            </IonText>
-          )}
-          
+          {loading && <LoadingSpinner isOpen={loading} />}
 
         </div>
-
-        {loading && <LoadingSpinner isOpen={loading} />}
       </IonContent>
-      
     </IonPage>
   );
 };
