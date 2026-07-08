@@ -69,7 +69,7 @@ const RepoItem: React.FC<RepoItemProps> = ({
         <IonItemOptions side="end">
           <IonItemOption
             onClick={() =>
-              history.push("/edit", {
+              history.push("/tab2", {
                 repository: repo
               })
             }

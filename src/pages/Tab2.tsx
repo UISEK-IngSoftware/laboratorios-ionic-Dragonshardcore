@@ -1,89 +1,128 @@
-import { IonButton, IonIcon, useIonViewWillEnter, IonContent, IonHeader, IonInput, IonPage, IonTextarea, IonTitle, IonToolbar, IonText} from '@ionic/react';
+import React, { useEffect, useState } from 'react';
+import {
+  IonButton,
+  IonContent,
+  IonHeader,
+  IonInput,
+  IonPage,
+  IonTextarea,
+  IonTitle,
+  IonToolbar,
+  IonText
+} from '@ionic/react';
+
 import './Tab2.css';
-import React from 'react';
-import { RepositoryPayload } from '../interfaces/payload';
-import { createRepository } from '../services/GithubServces';
-import { useHistory } from 'react-router';
+
+import { useHistory, useLocation } from 'react-router';
+
 import LoadingSpinner from '../components/LoadingSpinner';
-import { fetchRepositories } from '../services/GithubServces';
+
+import { RepositoryPayload } from '../interfaces/payload';
 import { Repository } from '../interfaces/Repository';
-import { logoGithub, refresh } from 'ionicons/icons';
+
+import {
+  createRepository,
+  updateRepository
+} from '../services/GithubServces';
 
 const Tab2: React.FC = () => {
-  const [loading, setLoading] = React.useState<boolean>(false);
+
   const history = useHistory();
-  const [repos,setRepos] = React.useState<Repository[]>([]);
-  const [errorMsg, setErrorMsg] = React.useState<string>("");
+  const location = useLocation<any>();
+  const repo = location.state?.repository;
 
-  const repoFormData: RepositoryPayload = {
-    name: '',
-    description: ''
-  };
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const setRepoFormData = (value: string) => {
-    repoFormData.name = value;
-  }
-  const setRepoDescription = (value: string) => {
-    repoFormData.description = value;
-  }
-   const loadRepos = async() => { 
-  
-      setLoading(true);
-      const reposData = await fetchRepositories();
-      setRepos(reposData);
-      setLoading(false);
-  
+  const [repoFormData, setRepoFormData] = useState<RepositoryPayload>({
+    name: "",
+    description: ""
+  });
+
+  useEffect(() => {
+    if (repo) {
+      setRepoFormData({
+        name: repo.name,
+        description: repo.description || ""
+      });
     }
+  }, [repo]);
 
   const saveRepository = async () => {
-  if (repoFormData.name.trim() === '') {
-    setErrorMsg('Debes llenar el campo nombre del repositorio.');
-    return;
-  }
 
-  if (repoFormData.description.trim() === '') {
-    setErrorMsg('Debes llenar el campo descripción del repositorio.');
-    return;
-  }
+    if (repoFormData.name.trim() === "") {
+      setErrorMsg("Debes ingresar el nombre del repositorio.");
+      return;
+    }
 
-  setErrorMsg('');
-  setLoading(true);
+    if (repoFormData.description.trim() === "") {
+      setErrorMsg("Debes ingresar la descripción.");
+      return;
+    }
 
-  try {
-    await createRepository(repoFormData);
-    history.push('/tab1');
-  } catch (error: any) {
-    setErrorMsg('Error al crear el repositorio: ' + (error?.message || error));
-  } finally {
-    setLoading(false);
-  }
-};
+    setErrorMsg("");
+    setLoading(true);
 
-  useIonViewWillEnter(() => setErrorMsg(""))
-  
+    try {
+
+      if (repo) {
+
+        await updateRepository(
+          repo.owner.login,
+          repo.name,
+          repoFormData
+        );
+
+      } else {
+
+        await createRepository(repoFormData);
+
+      }
+
+      history.push("/tab1");
+
+    } catch (error: any) {
+
+      setErrorMsg(
+        "Ocurrió un error: " +
+        (error.message || error)
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
   return (
     <IonPage>
+
       <IonHeader>
         <IonToolbar color="success">
-          <IonTitle>Agregar repositorio</IonTitle>
+          <IonTitle>
+            {repo ? "Editar repositorio" : "Agregar repositorio"}
+          </IonTitle>
         </IonToolbar>
-        <IonButton onClick={loadRepos}>
-          <IonIcon icon={refresh} />
-          </IonButton>
       </IonHeader>
 
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Agregar repositorio</IonTitle>
-          </IonToolbar>
-        </IonHeader>
 
         <div className="form-container">
 
           <div className="form-header">
-            <h2>Nuevo Repositorio</h2>
-            <p>Complete los datos para crear un repositorio</p>
+
+            <h2>
+              {repo ? "Editar Repositorio" : "Nuevo Repositorio"}
+            </h2>
+
+            <p>
+              {repo
+                ? "Modifique la información del repositorio."
+                : "Complete los datos para crear un repositorio."}
+            </p>
+
           </div>
 
           <IonInput
@@ -91,9 +130,13 @@ const Tab2: React.FC = () => {
             label="Nombre"
             labelPlacement="floating"
             fill="outline"
-            placeholder="nombre-repositorio"
             value={repoFormData.name}
-            onIonChange={(e) => setRepoFormData(e.detail.value!)}
+            onIonChange={(e) =>
+              setRepoFormData({
+                ...repoFormData,
+                name: e.detail.value || ""
+              })
+            }
           />
 
           <IonTextarea
@@ -101,28 +144,39 @@ const Tab2: React.FC = () => {
             label="Descripción"
             labelPlacement="floating"
             fill="outline"
-            placeholder="descripcion-repositorio"
             rows={6}
-            value={repoFormData.description}
-            onIonChange={(e) => setRepoDescription(e.detail.value!)}
             autoGrow
+            value={repoFormData.description}
+            onIonChange={(e) =>
+              setRepoFormData({
+                ...repoFormData,
+                description: e.detail.value || ""
+              })
+            }
           />
-            {errorMsg !== "" && (
-              <IonText color="danger">
-                {errorMsg}
-              </IonText>
-            )}
+
+          {errorMsg !== "" && (
+            <IonText color="danger">
+              <p>{errorMsg}</p>
+            </IonText>
+          )}
+
           <IonButton
-            className='form-field'
+            className="form-field"
             expand="block"
-            fill='solid'
             onClick={saveRepository}
           >
-            Crear Repositorio
+            {repo ? "Actualizar Repositorio" : "Crear Repositorio"}
           </IonButton>
+
         </div>
-        {loading && <LoadingSpinner isOpen={loading} />}
+
+        {loading && (
+          <LoadingSpinner isOpen={loading} />
+        )}
+
       </IonContent>
+
     </IonPage>
   );
 };
