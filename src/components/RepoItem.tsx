@@ -35,6 +35,7 @@ const RepoItem: React.FC<RepoItemProps> = ({
       console.log("Repositorio eliminado correctamente.");
 
       setShowAlert(false);
+      
 
     } catch (error) {
       console.error("Error al eliminar el repositorio:", error);
@@ -99,6 +100,7 @@ const RepoItem: React.FC<RepoItemProps> = ({
             text: 'Eliminar',
             role: 'destructive',
             handler: handleDelete
+            
           }
         ]}
       />
